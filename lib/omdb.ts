@@ -1,89 +1,33 @@
 import Papa from "papaparse";
 
-export const fetchMovies = async (
-  query: string,
-  rating: number
-) => {
+export const fetchMovies = async () => {
   try {
     const res = await fetch(
       "/data/imdb_top_1000.csv"
     );
 
+    console.log("Response:", res);
+
     const csvText = await res.text();
+
+    console.log(
+      "CSV Length:",
+      csvText.length
+    );
 
     const parsed = Papa.parse(csvText, {
       header: true,
       skipEmptyLines: true,
     });
 
-    const movies = parsed.data as any[];
-
     console.log(
-      "First Movie Data:",
-      movies[0]
+      "Parsed:",
+      parsed.data
     );
 
-    console.log(
-      "Total Movies:",
-      movies.length
-    );
-
-    if (!movies || movies.length === 0) {
-      return [];
-    }
-
-    if (!query || query.trim() === "") {
-      return movies.filter(
-        (movie) =>
-          parseFloat(
-            movie.IMDB_Rating || "0"
-          ) >= rating
-      );
-    }
-
-    const filteredMovies = movies.filter(
-      (movie) => {
-        const genre = String(
-          movie.Genre || ""
-        ).toLowerCase();
-
-        const title = String(
-          movie.Series_Title || ""
-        ).toLowerCase();
-
-        const imdbRating = parseFloat(
-          movie.IMDB_Rating || "0"
-        );
-
-        const searchQuery =
-          query.toLowerCase();
-
-        return (
-          (genre.includes(searchQuery) ||
-            title.includes(
-              searchQuery
-            )) &&
-          imdbRating >= rating
-        );
-      }
-    );
-
-    console.log(
-      "Query:",
-      query
-    );
-
-    console.log(
-      "Filtered Movies:",
-      filteredMovies.length
-    );
-
-    return filteredMovies;
+    return parsed.data;
   } catch (error) {
-    console.log(
-      "Fetch Movies Error:",
-      error
-    );
+    console.log("ERROR:", error);
 
     return [];
   }

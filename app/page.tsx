@@ -23,21 +23,14 @@ export default function Home() {
 
   const [rating, setRating] = useState(7);
 
-  const handleFetch = async (
-    customSearch?: string
-  ) => {
+  const handleFetch = async () => {
     try {
       setLoading(true);
 
-      const movieData = await fetchMovies(
-        customSearch &&
-          customSearch.trim() !== ""
-          ? customSearch
-          : selectedMood.query,
-        rating
-      );
+      const movieData =
+        await fetchMovies();
 
-      setMovies(movieData);
+      setMovies(movieData.slice(0, 20));
     } catch (error) {
       console.log(error);
     } finally {
@@ -47,7 +40,7 @@ export default function Home() {
 
   useEffect(() => {
     handleFetch();
-  }, [selectedMood, rating]);
+  }, []);
 
   return (
     <main className="min-h-screen pt-24 bg-gradient-to-b from-[#0b1026] to-[#6a11cb] text-white">
@@ -66,18 +59,13 @@ export default function Home() {
         setSearch={setSearch}
         rating={rating}
         setRating={setRating}
-        onSearch={() =>
-          handleFetch(search)
-        }
+        onSearch={handleFetch}
       />
 
       <section className="max-w-7xl mx-auto px-6 py-12">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <h3 className="text-3xl font-bold">
-            Rekomendasi untuk Mood:
-            <span className="text-pink-400 ml-2">
-              {selectedMood.nama}
-            </span>
+            Rekomendasi Film
           </h3>
 
           <p className="text-gray-300">
