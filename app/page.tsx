@@ -13,7 +13,7 @@ import { fetchMovies } from "@/lib/omdb";
 
 export default function Home() {
   const [selectedMood, setSelectedMood] =
-    useState(moods[2]);
+    useState(moods[0]);
 
   const [movies, setMovies] = useState<any[]>([]);
 
@@ -23,23 +23,21 @@ export default function Home() {
 
   const [rating, setRating] = useState(7);
 
-  const handleFetch = async (query?: string) => {
+  const handleFetch = async (
+    customSearch?: string
+  ) => {
     try {
       setLoading(true);
 
       const movieData = await fetchMovies(
-        query || selectedMood.query,
+        customSearch &&
+          customSearch.trim() !== ""
+          ? customSearch
+          : selectedMood.query,
         rating
       );
 
-      const filtered = movieData.filter(
-        (movie: any) =>
-          movie.Genre?.toLowerCase().includes(
-            selectedMood.query.toLowerCase()
-          )
-      );
-
-      setMovies(filtered);
+      setMovies(movieData);
     } catch (error) {
       console.log(error);
     } finally {
@@ -49,12 +47,7 @@ export default function Home() {
 
   useEffect(() => {
     handleFetch();
-  }, [selectedMood]);
-
-  const filteredMovies = movies.filter(
-    (movie) =>
-      Number(movie.IMDB_Rating || 0) >= rating
-  );
+  }, [selectedMood, rating]);
 
   return (
     <main className="min-h-screen pt-24 bg-gradient-to-b from-[#0b1026] to-[#6a11cb] text-white">
@@ -73,7 +66,9 @@ export default function Home() {
         setSearch={setSearch}
         rating={rating}
         setRating={setRating}
-        onSearch={() => handleFetch(search)}
+        onSearch={() =>
+          handleFetch(search)
+        }
       />
 
       <section className="max-w-7xl mx-auto px-6 py-12">
@@ -86,7 +81,7 @@ export default function Home() {
           </h3>
 
           <p className="text-gray-300">
-            {filteredMovies.length} film ditemukan
+            {movies.length} film ditemukan
           </p>
         </div>
 
@@ -96,7 +91,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-8">
-            {filteredMovies.map(
+            {movies.map(
               (movie, index) => (
                 <MovieCard
                   key={index}
