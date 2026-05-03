@@ -18,6 +18,20 @@ export const fetchMovies = async (
 
     const movies = parsed.data as any[];
 
+    console.log(
+      "First Movie Data:",
+      movies[0]
+    );
+
+    console.log(
+      "Total Movies:",
+      movies.length
+    );
+
+    if (!movies || movies.length === 0) {
+      return [];
+    }
+
     if (!query || query.trim() === "") {
       return movies.filter(
         (movie) =>
@@ -54,9 +68,22 @@ export const fetchMovies = async (
       }
     );
 
+    console.log(
+      "Query:",
+      query
+    );
+
+    console.log(
+      "Filtered Movies:",
+      filteredMovies.length
+    );
+
     return filteredMovies;
   } catch (error) {
-    console.log(error);
+    console.log(
+      "Fetch Movies Error:",
+      error
+    );
 
     return [];
   }
